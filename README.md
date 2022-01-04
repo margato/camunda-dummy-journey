@@ -15,7 +15,7 @@ Each application has only one purpose and are developed to be reusable in order 
 in which external tasks are architected to be plugged in different BPMNs with ease.
 
 ### Engine
-This application runs [Camunda](https://docs.camunda.org/manual/latest/) engine only.
+This application only runs [Camunda](https://docs.camunda.org/manual/latest/) engine.
 
 ### CreditCardProposal
 This application is an [external task](https://docs.camunda.org/manual/latest/user-guide/process-engine/external-tasks/) that process approved and rejected credit card proposals.
