@@ -4,7 +4,7 @@
 This is a study project to practice the development of [Camunda](https://docs.camunda.org/manual/latest/) based applications.
 To be more interesting, this project simulates a credit card applicant journey in which the user inputs documents to sign up for a credit card.
 
-![](./docs/credit_card_bpmn.jpeg)
+![](.docs/credit_card_bpmn.jpeg)
 
 This project contains three modules:
 - Engine
@@ -12,7 +12,7 @@ This project contains three modules:
 - ValidateDocuments
 
 Each application has only one purpose and are developed to be reusable in order to simulate real-world scenario
-in which external tasks are architected to be plugged in different BPMNs with easily.
+in which external tasks are architected to be plugged in different BPMNs with ease.
 
 ### Engine
 This application runs [Camunda](https://docs.camunda.org/manual/latest/) engine only.
