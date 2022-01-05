@@ -11,7 +11,7 @@ This project contains three modules:
 - CreditCardProposal
 - ValidateDocuments
 
-Each application has only one purpose and are developed to be reusable in order to simulate real-world scenario
+Each application has a context and are developed to be reusable in order to simulate real-world scenario
 in which external tasks are architected to be plugged in different BPMNs with ease.
 
 ### Engine
