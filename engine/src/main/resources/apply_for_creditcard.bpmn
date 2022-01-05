@@ -1,127 +1,151 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0so4dc2" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
   <bpmn:process id="ApplyForCreditCardProject" isExecutable="true">
-    <bpmn:startEvent id="startJourney" name="Start">
-      <bpmn:outgoing>Flow_1oilevi</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_1oilevi" sourceRef="startJourney" targetRef="askDocuments" />
-    <bpmn:userTask id="askDocuments" name="Ask Customer Documents" camunda:formKey="">
-      <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="cpf" label="cpf" type="string" />
-          <camunda:formField id="phone" label="phone" type="string" />
-        </camunda:formData>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1oilevi</bpmn:incoming>
-      <bpmn:outgoing>Flow_1yeh4yq</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_1yeh4yq" sourceRef="askDocuments" targetRef="validateDocuments" />
-    <bpmn:endEvent id="Event_0dvxdun" name="Approved Credit Card">
-      <bpmn:incoming>Flow_1tivza6</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1tivza6" sourceRef="approveCreditCard" targetRef="Event_0dvxdun" />
     <bpmn:serviceTask id="validateDocuments" name="Validate Documents" camunda:type="external" camunda:topic="validateDocuments">
       <bpmn:incoming>Flow_1yeh4yq</bpmn:incoming>
       <bpmn:outgoing>Flow_11z3kqk</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:serviceTask id="rejectCreditCard" name="Reject Credit Card" camunda:type="external" camunda:topic="rejectCreditCard">
-      <bpmn:incoming>InvalidDocumentsFlow</bpmn:incoming>
+      <bpmn:incoming>Flow_0k1qmtj</bpmn:incoming>
       <bpmn:outgoing>Flow_0k7cgqd</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:serviceTask id="approveCreditCard" name="Approve Credit Card" camunda:type="external" camunda:topic="approveCreditCard">
-      <bpmn:incoming>ValidDocumentsFlow</bpmn:incoming>
+      <bpmn:incoming>Flow_0k1qmt2</bpmn:incoming>
       <bpmn:outgoing>Flow_1tivza6</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_0k7cgqd" sourceRef="rejectCreditCard" targetRef="Event_1qefm38" />
-    <bpmn:sequenceFlow id="Flow_11z3kqk" sourceRef="validateDocuments" targetRef="ValidateDocumentsGateway" />
-    <bpmn:exclusiveGateway id="ValidateDocumentsGateway" camunda:asyncBefore="true">
-      <bpmn:incoming>Flow_11z3kqk</bpmn:incoming>
-      <bpmn:outgoing>InvalidDocumentsFlow</bpmn:outgoing>
-      <bpmn:outgoing>ValidDocumentsFlow</bpmn:outgoing>
+    <bpmn:exclusiveGateway id="ValidateDocumentsGateway" camunda:asyncBefore="true" default="Flow_0k1qmtj">
+      <bpmn:incoming>Flow_0ntalkh</bpmn:incoming>
+      <bpmn:outgoing>Flow_0k1qmt2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0k1qmtj</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="InvalidDocumentsFlow" name="Invalid documents" sourceRef="ValidateDocumentsGateway" targetRef="rejectCreditCard">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not are_documents_valid}</bpmn:conditionExpression>
+    <bpmn:serviceTask id="validateCredit" name="Validate Credit" camunda:type="external" camunda:topic="validateCredit">
+      <bpmn:incoming>Flow_11z3kqk</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ntalkh</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="askDocuments" name="Ask Customer Documents" camunda:formKey="">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="cpf" label="cpf" type="string" />
+          <camunda:formField id="phone" label="phone" type="string" />
+          <camunda:formField id="income" label="income" type="string" />
+          <camunda:formField id="age" label="age" type="long" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1oilevi</bpmn:incoming>
+      <bpmn:incoming>Flow_1n5a1ts</bpmn:incoming>
+      <bpmn:outgoing>Flow_1yeh4yq</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:startEvent id="startJourney" name="Start">
+      <bpmn:outgoing>Flow_1oilevi</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:boundaryEvent id="Event_0of2ryu" attachedToRef="validateDocuments">
+      <bpmn:outgoing>Flow_1n5a1ts</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1tj3zke" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_11z3kqk" sourceRef="validateDocuments" targetRef="validateCredit" />
+    <bpmn:sequenceFlow id="Flow_1yeh4yq" sourceRef="askDocuments" targetRef="validateDocuments" />
+    <bpmn:sequenceFlow id="Flow_1oilevi" sourceRef="startJourney" targetRef="askDocuments" />
+    <bpmn:sequenceFlow id="Flow_1n5a1ts" sourceRef="Event_0of2ryu" targetRef="askDocuments" />
+    <bpmn:sequenceFlow id="Flow_1tivza6" sourceRef="approveCreditCard" targetRef="Event_0dvxdun" />
+    <bpmn:sequenceFlow id="Flow_0k7cgqd" sourceRef="rejectCreditCard" targetRef="Event_1qefm38" />
+    <bpmn:sequenceFlow id="Flow_0k1qmt2" name="Credit Allowed" sourceRef="ValidateDocumentsGateway" targetRef="approveCreditCard">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${is_credit_allowed}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="ValidDocumentsFlow" name="Valid documents" sourceRef="ValidateDocumentsGateway" targetRef="approveCreditCard">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${are_documents_valid}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0ntalkh" sourceRef="validateCredit" targetRef="ValidateDocumentsGateway" />
+    <bpmn:sequenceFlow id="Flow_0k1qmtj" sourceRef="ValidateDocumentsGateway" targetRef="rejectCreditCard" />
     <bpmn:endEvent id="Event_1qefm38" name="Rejected Credit Card">
       <bpmn:incoming>Flow_0k7cgqd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_0dvxdun" name="Approved Credit Card">
+      <bpmn:incoming>Flow_1tivza6</bpmn:incoming>
     </bpmn:endEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ApplyForCreditCardProject">
-      <bpmndi:BPMNEdge id="Flow_1h67te6_di" bpmnElement="ValidDocumentsFlow">
-        <di:waypoint x="590" y="245" />
-        <di:waypoint x="590" y="330" />
-        <di:waypoint x="690" y="330" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="595" y="313" width="81" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1d8tahq_di" bpmnElement="InvalidDocumentsFlow">
-        <di:waypoint x="590" y="195" />
-        <di:waypoint x="590" y="120" />
-        <di:waypoint x="690" y="120" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="591" y="102" width="89" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_11z3kqk_di" bpmnElement="Flow_11z3kqk">
-        <di:waypoint x="500" y="220" />
-        <di:waypoint x="565" y="220" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0k7cgqd_di" bpmnElement="Flow_0k7cgqd">
-        <di:waypoint x="790" y="120" />
-        <di:waypoint x="842" y="120" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1tivza6_di" bpmnElement="Flow_1tivza6">
-        <di:waypoint x="790" y="330" />
-        <di:waypoint x="842" y="330" />
+        <di:waypoint x="450" y="210" />
+        <di:waypoint x="480" y="210" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1yeh4yq_di" bpmnElement="Flow_1yeh4yq">
-        <di:waypoint x="340" y="220" />
-        <di:waypoint x="400" y="220" />
+        <di:waypoint x="320" y="210" />
+        <di:waypoint x="350" y="210" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1oilevi_di" bpmnElement="Flow_1oilevi">
-        <di:waypoint x="188" y="220" />
-        <di:waypoint x="240" y="220" />
+        <di:waypoint x="188" y="210" />
+        <di:waypoint x="220" y="210" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="startJourney">
-        <dc:Bounds x="152" y="202" width="36" height="36" />
+      <bpmndi:BPMNEdge id="Flow_1n5a1ts_di" bpmnElement="Flow_1n5a1ts">
+        <di:waypoint x="400" y="268" />
+        <di:waypoint x="400" y="288" />
+        <di:waypoint x="270" y="288" />
+        <di:waypoint x="270" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ntalkh_di" bpmnElement="Flow_0ntalkh">
+        <di:waypoint x="580" y="210" />
+        <di:waypoint x="612" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tivza6_di" bpmnElement="Flow_1tivza6">
+        <di:waypoint x="784" y="120" />
+        <di:waypoint x="827" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0k1qmtj_di" bpmnElement="Flow_0k1qmtj">
+        <di:waypoint x="637" y="235" />
+        <di:waypoint x="637" y="300" />
+        <di:waypoint x="683" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0k7cgqd_di" bpmnElement="Flow_0k7cgqd">
+        <di:waypoint x="783" y="300" />
+        <di:waypoint x="827" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1h67te6_di" bpmnElement="Flow_0k1qmt2">
+        <di:waypoint x="637" y="185" />
+        <di:waypoint x="637" y="120" />
+        <di:waypoint x="684" y="120" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="158" y="245" width="24" height="14" />
+          <dc:Bounds x="594" y="103" width="71" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_0o8sq9n_di" bpmnElement="validateDocuments">
+        <dc:Bounds x="350" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0d3awzu_di" bpmnElement="validateCredit">
+        <dc:Bounds x="480" y="170" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1lvxh9h_di" bpmnElement="askDocuments">
-        <dc:Bounds x="240" y="180" width="100" height="80" />
+        <dc:Bounds x="220" y="170" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0dvxdun_di" bpmnElement="Event_0dvxdun">
-        <dc:Bounds x="842" y="312" width="36" height="36" />
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="startJourney">
+        <dc:Bounds x="152" y="192" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="820" y="355" width="80" height="27" />
+          <dc:Bounds x="158" y="235" width="24" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0o8sq9n_di" bpmnElement="validateDocuments">
-        <dc:Bounds x="400" y="180" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_125c6yy_di" bpmnElement="rejectCreditCard">
-        <dc:Bounds x="690" y="80" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0qx44vj_di" bpmnElement="approveCreditCard">
-        <dc:Bounds x="690" y="290" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1lbsihw_di" bpmnElement="ValidateDocumentsGateway" isMarkerVisible="true">
-        <dc:Bounds x="565" y="195" width="50" height="50" />
+        <dc:Bounds x="612" y="185" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="705" y="336" width="62" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_125c6yy_di" bpmnElement="rejectCreditCard">
+        <dc:Bounds x="683" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1qefm38_di" bpmnElement="Event_1qefm38">
-        <dc:Bounds x="842" y="102" width="36" height="36" />
+        <dc:Bounds x="827" y="282" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="822" y="145" width="76" height="27" />
+          <dc:Bounds x="807" y="336" width="76" height="27" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qx44vj_di" bpmnElement="approveCreditCard">
+        <dc:Bounds x="684" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0dvxdun_di" bpmnElement="Event_0dvxdun">
+        <dc:Bounds x="827" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="805" y="145" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0h3qzlm_di" bpmnElement="Event_0of2ryu">
+        <dc:Bounds x="382" y="232" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

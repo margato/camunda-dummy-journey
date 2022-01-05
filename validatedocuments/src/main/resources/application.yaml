@@ -5,3 +5,4 @@ camunda.bpm.client:
   async-response-timeout: 500
   max-tasks: 50
   lock-duration: 300
+  worker-id: ValidateDocumentsExternalTask

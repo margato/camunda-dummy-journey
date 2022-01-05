@@ -1,7 +1,8 @@
-package io.github.margato.camunda.creditcard.validatedocuments.listeners;
+package io.github.margato.camunda.creditcard.proposal.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.margato.camunda.creditcard.validatedocuments.model.Customer;
+import io.github.margato.camunda.creditcard.proposal.models.Customer;
+import io.github.margato.camunda.creditcard.proposal.usecases.ValidateCreditUseCase;
 import org.camunda.bpm.client.spring.annotation.ExternalTaskSubscription;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskHandler;
@@ -15,29 +16,30 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-@ExternalTaskSubscription("validateDocuments")
+
+@ExternalTaskSubscription("validateCredit")
 @Component
-public class ValidateDocumentsHandler implements ExternalTaskHandler {
+public class ValidateCreditListener implements ExternalTaskHandler {
+    @Autowired
+    private ValidateCreditUseCase validateCreditUseCase;
+
     @Autowired
     private ObjectMapper objectMapper;
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
         logger.info("Executing task {}", externalTask.getExecutionId());
         Map<String, Object> variables = externalTask.getAllVariables();
-        Customer customer = objectMapper.convertValue(variables, Customer.class);
 
-        boolean isCpfValid = customer.getCpf() != null && customer.getCpf().length() == 11;
-        boolean isPhoneValid = customer.getPhone() != null && customer.getPhone().length() == 11;
-        boolean areDocumentsValid = isCpfValid && isPhoneValid;
+        Customer customer = objectMapper.convertValue(variables, Customer.class);
+        boolean validationResult = validateCreditUseCase.validate(customer);
 
         VariableMap output = Variables.createVariables();
-        output.putValue("cpf", customer.getCpf());
-        output.putValue("are_documents_valid", areDocumentsValid);
-
+        output.putValue("is_credit_allowed", validationResult);
         externalTaskService.complete(externalTask, output);
 
-        logger.info("Task {} completed. Validation result: {}", externalTask.getExecutionId(), areDocumentsValid);
+        logger.info("Task {} completed.", externalTask.getExecutionId());
     }
 }
