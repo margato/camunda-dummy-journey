@@ -21,4 +21,4 @@ This application only runs [Camunda](https://docs.camunda.org/manual/latest/) en
 This application is an [external task](https://docs.camunda.org/manual/latest/user-guide/process-engine/external-tasks/) that validates credit and process approved and rejected credit card proposals.
 
 ### ValidateDocuments
-This application is an [external task](https://docs.camunda.org/manual/latest/user-guide/process-engine/external-tasks/) that validates the documents provided and outputs true or false based on validation result.
+This application is an [external task](https://docs.camunda.org/manual/latest/user-guide/process-engine/external-tasks/) that validates the documents provided.
